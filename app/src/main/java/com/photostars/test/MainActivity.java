@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
     private RelativeLayout mainView;
     private Button addButton;
     private PopupWindow popupWindow;
@@ -85,15 +85,17 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.setContentView(popupView);
         popupWindow.showAsDropDown(contentView);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // TODO Auto-generated method stub
-        Log.d("gus","onTouchEvent");
-
-        if (popupWindow != null && popupWindow.isShowing()) {
-            popupWindow.dismiss();
-            popupWindow = null;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                System.out.print("aa");
+                Log.d("gus","ACTION_MOVE");
+                break;
         }
         return super.onTouchEvent(event);
     }
+
+    
 }
