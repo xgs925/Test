@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -107,17 +109,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void onSingleTapUpAddedView(TextView contentView) {
-        choosedView = contentView;
-        contentView.setBackgroundDrawable(getDrawable(R.drawable.btn_boader));
+    private void onSingleTapUpAddedView(TextView textView) {
+        choosedView = textView;
+        textView.setBackgroundDrawable(getDrawable(R.drawable.btn_boader));
 
-        popupWindow = new PopupWindow(contentView,
+        View popupView = getLayoutInflater().inflate(R.layout.popup_view, null);
+        popupWindow = new PopupWindow(popupView,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT, true);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
-        View popupView = getLayoutInflater().inflate(R.layout.popup_view, null);
-        popupWindow.setContentView(popupView);
-        popupWindow.showAsDropDown(contentView);
+        popupWindow.showAsDropDown(textView);
+
+        Button btn1= (Button) popupView.findViewById(R.id.pop_btn1);
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"btn1");
+                View popupView = getLayoutInflater().inflate(R.layout.popup_style, null);
+                PopupWindow buttonWindow=new PopupWindow(popupView,RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT,true);
+                buttonWindow.setBackgroundDrawable(new BitmapDrawable());
+                buttonWindow.setOutsideTouchable(true);
+                buttonWindow.setAnimationStyle(R.style.pop_button_anim);
+                buttonWindow.showAtLocation(((ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0), Gravity.BOTTOM,0,0);
+            }
+        });
     }
 
 
