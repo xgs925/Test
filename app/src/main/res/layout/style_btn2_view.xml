@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/btn2View"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:background="#212121"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:text="字号"
+        android:layout_marginLeft="15dp"
+        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:text="0"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:text="pt"
+            android:layout_height="wrap_content" />
+    <SeekBar
+        android:id="@+id/sizeBar"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:thumb="@mipmap/seek_thumb_pic"
+        android:layout_width="match_parent"
+        android:thumbOffset="0dip"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:text="字体"
+        android:textColor="@color/white"
+        android:paddingLeft="15dp"
+        android:textSize="13sp"
+        android:background="#313131"
+        android:gravity="center_vertical"
+        android:layout_height="23dp" />
+    <ListView
+        android:background="#212121"
+        android:id="@+id/fontList"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:scrollbars="none"
+        android:dividerHeight="1dp"
+        android:divider="#424242"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
+</LinearLayout>
