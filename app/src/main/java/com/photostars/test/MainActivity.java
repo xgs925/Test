@@ -3,6 +3,9 @@ package com.photostars.test;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -78,18 +81,23 @@ public class MainActivity extends Activity {
             "#fff899", "#b4d565", "#8ec51f", "#21ae37", "#009a43", "#009f96", "#7dcef4", "#0069b7", "#01489d", "#1c2188",
             "#440163", "#601a87", "#8858a1", "#a98bbc", "#c391bf", "#f19fc2", "#ea6aa2", "#e4017f", "#a4005a", "#7d0121",
             "#e5014f", "#ea6a76"};
+    private ScrollView vScroll;
+    private int choosedTextalpha;//当前文字透明度（0-255）
+    private ImageView mImageView;//操作图
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         contentView = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(contentView);
+        mImageView= (ImageView) findViewById(R.id.mImage);
         initView();
     }
 
     private void initView() {
+        initShelter();
         initPopupWindow();
-        ScrollView vScroll = (ScrollView) findViewById(R.id.vScroll);
+        vScroll = (ScrollView) findViewById(R.id.vScroll);
         vScroll.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -139,8 +147,9 @@ public class MainActivity extends Activity {
                 });
                 addTextView.setText("Test");
                 addTextView.setGravity(Gravity.CENTER);
+                addTextView.setTextColor(Color.parseColor("#ffffff"));
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins((int) workspaceCenterX, (int) workspaceCenterY,0,0);
+                lp.setMargins((int) workspaceCenterX, (int) workspaceCenterY, 0, 0);
                 addTextView.setLayoutParams(lp);
 
                 mainView.addView(addTextView);
@@ -152,12 +161,22 @@ public class MainActivity extends Activity {
                 }
                 addTextView.setBackgroundResource(R.drawable.btn_boader);
                 choosedView = addTextView;
-                currentPopupWindow.showAtLocation(mainView, Gravity.CENTER, 0, 0);
+                currentPopupWindow.showAtLocation(mainView, Gravity.NO_GRAVITY, (int) workspaceCenterX, (int) workspaceCenterY - 50);
 
             }
 
 
         });
+
+    }
+
+    private void initShelter() {
+        ImageView l= (ImageView) findViewById(R.id.shelterLeft);
+        ImageView r= (ImageView) findViewById(R.id.shelterRight);
+        ImageView t= (ImageView) findViewById(R.id.shelterTop);
+        ImageView b= (ImageView) findViewById(R.id.shelterBottom);
+        Bitmap photo = BitmapFactory.decodeResource(this.getResources(), R.drawable.test1);
+        int width = photo.getWidth(), hight = photo.getHeight();
 
     }
 
@@ -213,8 +232,8 @@ public class MainActivity extends Activity {
         final EditText editText = (EditText) popupView.findViewById(R.id.editText);
         editText.setText(choosedView.getText());
         editText.requestFocus();
-        Button confirmBtn = (Button) popupView.findViewById(R.id.confirmBtn);
-        Button toStyleBtn = (Button) popupView.findViewById(R.id.toStyleBtn);
+        View confirmBtn =  popupView.findViewById(R.id.confirmBtn);
+        View toStyleBtn = popupView.findViewById(R.id.toStyleBtn);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -262,27 +281,6 @@ public class MainActivity extends Activity {
 
         editPopupWindow = buttomWindow;
 
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                int[] choosedLocation = new int[2];
-//                choosedView.getLocationOnScreen(choosedLocation);
-//                int bottomY = choosedLocation[1] + choosedView.getHeight();
-//                int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
-//                float edit_pop_offset = getResources().getDimension(R.dimen.edit_pop_offset);
-//
-//                float offset = bottomY - (screenHeight - edit_pop_offset);
-//
-//
-//                Log.d(TAG, offset + "offset");
-//                if (offset > 0) {
-//                    mainView.setY(-offset);
-//                    mainViewOffset = offset;
-//                }
-//            }
-//        }, 500);
         float edit_pop_offset = getResources().getDimension(R.dimen.edit_pop_offset);
         offsetMainView(buttomWindow, edit_pop_offset);
 
@@ -344,8 +342,13 @@ public class MainActivity extends Activity {
                 }
             }
         });
+//字号
+        TextView textSizeView = (TextView) styleView.findViewById(R.id.textSizeView);
+        Log.d(TAG,"textSize"+choosedView.getTextSize());
+
+
 //字体
-        ListView fontListView = (ListView) styleView.findViewById(R.id.fontList);
+        final ListView fontListView = (ListView) styleView.findViewById(R.id.fontList);
         final Typeface[] fonts = {Typeface.DEFAULT, Typeface.DEFAULT_BOLD, Typeface.MONOSPACE, Typeface.SANS_SERIF, Typeface.SERIF};
 
         fontListView.setAdapter(new FontListViewAdapter(this, fonts));
@@ -371,6 +374,10 @@ public class MainActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
+                if(motionEvent.getAction()==MotionEvent.ACTION_DOWN){
+                     choosedTextalpha = Color.alpha(choosedView.getCurrentTextColor());
+                    Log.d(TAG,"alpha"+choosedTextalpha);
+                }
                 int[] location = new int[2];
                 view.getLocationOnScreen(location);
                 RectF rect = new RectF(location[0], location[1], location[0] + view.getWidth(),
@@ -382,8 +389,11 @@ public class MainActivity extends Activity {
                 if (isInViewRect) {
                     float w = view.getWidth() / colors.length;
                     int i = (int) Math.ceil((x - location[0]) / w);
-                    choosedView.setTextColor(Color.parseColor(colors[i - 1]));
-                    Log.d(TAG, "colorLayout" + i);
+                    if (i <= colors.length) {
+                        int color = Color.parseColor(colors[i - 1]);
+                        ColorStateList colorStateList=ColorStateList.valueOf(color);
+                        choosedView.setTextColor(colorStateList.withAlpha(choosedTextalpha));
+                    }
                 } else {
 
                 }
@@ -421,15 +431,20 @@ public class MainActivity extends Activity {
         });
 
         //透明度
+        final TextView alphaTextView = (TextView) styleView.findViewById(R.id.alphaText);
         SeekBar alphaBar = (SeekBar) styleView.findViewById(R.id.alphaBar);
-        float alpha = choosedView.getAlpha();
-        alphaBar.setMax(100);
-        alphaBar.setProgress((int) (alpha * 100));
+        int color = choosedView.getCurrentTextColor();
+        int alpha = Color.alpha(color);
+        alphaBar.setMax(255);
+        alphaBar.setProgress(alpha);
+        alphaTextView.setText(alpha * 100 / 255 + "");
         alphaBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 Log.d(TAG, "alphaBar" + i);
-                choosedView.setAlpha((float) (i / 100.0));
+                ColorStateList color = choosedView.getTextColors();
+                choosedView.setTextColor(color.withAlpha(i));
+                alphaTextView.setText(i * 100 / 255 + "");
             }
 
             @Override
@@ -448,6 +463,14 @@ public class MainActivity extends Activity {
         bottomWindow.showAtLocation(((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0), Gravity.BOTTOM, 0, 0);
         stylePopupWindow = bottomWindow;
         offsetMainView(bottomWindow, getResources().getDimension(R.dimen.style_pop_height));
+    }
+
+    private void exitStyleView() {
+        if (stylePopupWindow != null) {
+            stylePopupWindow.dismiss();
+            stylePopupWindow = null;
+            singleFinger = false;
+        }
     }
 
     private void onKeyboardShow() {
@@ -469,6 +492,16 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+
+//    private void exitEditView() {
+//        if (currentButtonView != null) {
+//            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//            currentButtonView.setVisibility(View.GONE);
+//            currentButtonView = null;
+//        }
+//    }
 
     private void onTouchView(View v, MotionEvent event) {
         Log.d(TAG, "onTouchView");
@@ -505,6 +538,7 @@ public class MainActivity extends Activity {
             if (touchAddedView != null & choosedView != touchAddedView) {
                 choosedView = touchAddedView;
             }
+            if(choosedView!=null) choosedView.setBackgroundResource(R.drawable.btn_boader);
             singleFinger = true;
             touchAddedView = null;
             preDegree = 0;
@@ -514,45 +548,6 @@ public class MainActivity extends Activity {
         }
     }
 
-//    private void exitEditView() {
-//        if (currentButtonView != null) {
-//            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-//            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-//            currentButtonView.setVisibility(View.GONE);
-//            currentButtonView = null;
-//        }
-//    }
-
-    private void exitStyleView() {
-        if (stylePopupWindow != null) {
-            stylePopupWindow.dismiss();
-            stylePopupWindow = null;
-            singleFinger = false;
-        }
-    }
-
-    private void rotateEvent(MotionEvent event) {
-        double delta_x = (event.getX(0) - event.getX(1));
-        double delta_y = (event.getY(0) - event.getY(1));
-        double radians = Math.atan2(delta_y, delta_x);
-        float degree = (float) Math.toDegrees(radians);
-        if (preDegree != 0) {
-            choosedView.setRotation(choosedView.getRotation() + (degree - preDegree));
-        }
-        preDegree = degree;
-    }
-
-//    private void chooseAddedView(TextView textView) {
-//        if (choosedView != null) {
-//            choosedView.setBackgroundDrawable(null);
-//        }
-//        if (currentPopupWindow.isShowing()) {
-//            currentPopupWindow.dismiss();
-//        }
-//        choosedView = textView;
-//        textView.setBackgroundResource(R.drawable.btn_boader);
-//        currentPopupWindow.showAsDropDown(textView);
-//    }
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener {
         float originalX;
@@ -600,20 +595,25 @@ public class MainActivity extends Activity {
         public boolean onSingleTapUp(MotionEvent e) {
             Log.d(TAG, "onSingleTap");
             if (touchAddedView != null & choosedView != touchAddedView) {//touch未选中的子view
+                Log.d(TAG, "onSingleTap1");
                 if (currentPopupWindow.isShowing()) {
                     currentPopupWindow.dismiss();
                 }
                 if (choosedView != null) choosedView.setBackgroundDrawable(null);
                 choosedView = touchAddedView;
                 choosedView.setBackgroundResource(R.drawable.btn_boader);
-                currentPopupWindow.showAsDropDown(choosedView);
+                currentPopupWindow.showAtLocation(vScroll, Gravity.NO_GRAVITY, (int) e.getX(), (int) e.getY() - 50);
+//                currentPopupWindow.showAsDropDown(choosedView);
             } else if (touchAddedView != null & choosedView == touchAddedView) {//touch选中的子view
+                Log.d(TAG, "onSingleTap2");
                 if (currentPopupWindow.isShowing()) {
                     currentPopupWindow.dismiss();
                 } else {
-                    currentPopupWindow.showAsDropDown(touchAddedView);
+                    currentPopupWindow.showAtLocation(vScroll, Gravity.NO_GRAVITY, (int) e.getX(), (int) e.getY() - 50);
+//                    currentPopupWindow.showAsDropDown(touchAddedView);
                 }
             } else if (touchAddedView == null) {//touch mainView
+                Log.d(TAG, "onSingleTap3");
                 if (currentPopupWindow.isShowing()) {
                     currentPopupWindow.dismiss();
                 }
@@ -640,4 +640,17 @@ public class MainActivity extends Activity {
 
 
     }
+
+    private void rotateEvent(MotionEvent event) {
+        double delta_x = (event.getX(0) - event.getX(1));
+        double delta_y = (event.getY(0) - event.getY(1));
+        double radians = Math.atan2(delta_y, delta_x);
+        float degree = (float) Math.toDegrees(radians);
+        if (preDegree != 0) {
+            choosedView.setRotation(choosedView.getRotation() + (degree - preDegree));
+        }
+        preDegree = degree;
+    }
+
+
 }

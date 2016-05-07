@@ -91,6 +91,13 @@
             android:textSize="17sp" />
     </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/mImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomBar"
+        android:layout_below="@id/titleBar"
+        android:src="@drawable/test1" />
 
     <HorizontalScrollView
         android:id="@+id/hScroll"
@@ -107,8 +114,41 @@
             <RelativeLayout
                 android:id="@+id/main_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </RelativeLayout>
+                android:layout_height="match_parent"></RelativeLayout>
         </ScrollView>
     </HorizontalScrollView>
+
+    <RelativeLayout
+        android:id="@+id/shelterLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomBar"
+        android:layout_below="@id/titleBar"
+        android:clickable="false">
+
+        <ImageView
+            android:id="@+id/shelterLeft"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/shelter" />
+        <ImageView
+            android:id="@+id/shelterTop"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/shelter" />
+        <ImageView
+            android:id="@+id/shelterRight"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/shelter" />
+        <ImageView
+            android:id="@+id/shelterBottom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/shelter" />
+    </RelativeLayout>
 </RelativeLayout>

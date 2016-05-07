@@ -1,73 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <RadioGroup
         android:id="@+id/popBtnGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#50000000"
+        android:background="#b0000000"
         android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/pop_btn_edit"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@null"
             android:gravity="center"
             android:padding="10dp"
-            android:text="编辑" />
+            android:text="编辑"
+            android:textColor="@color/white" />
+
 
         <RadioButton
             android:id="@+id/pop_btn_font"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@null"
             android:gravity="center"
             android:padding="10dp"
-            android:text="字体" />
+            android:text="字体"
+            android:textColor="@color/white" />
 
         <RadioButton
             android:id="@+id/pop_btn_style"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@null"
             android:gravity="center"
             android:padding="10dp"
-            android:text="样式" />
+            android:text="样式"
+            android:textColor="@color/white" />
 
         <RadioButton
             android:id="@+id/pop_btn_del"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:button="@null"
             android:gravity="center"
             android:padding="10dp"
-            android:text="删除" />
+            android:text="删除"
+            android:textColor="@color/white" />
 
     </RadioGroup>
-    <!--<Button-->
-    <!--android:id="@+id/pop_btn_edit"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="编辑" />-->
 
     <!--<Button-->
-    <!--android:id="@+id/pop_btn_style"-->
+    <!--android:id="@+id/pop_btn_edit"-->
+    <!--android:layout_weight="1"-->
     <!--android:layout_width="wrap_content"-->
     <!--android:layout_height="wrap_content"-->
-    <!--android:text="样式" />-->
+    <!--android:background="#b0000000"-->
+    <!--android:text="编辑"-->
+    <!--android:textColor="@color/white" />-->
+    <!--<Button-->
+    <!--android:id="@+id/pop_btn_style"-->
+    <!--android:layout_weight="1"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="#b0000000"-->
+    <!--android:text="样式"-->
+    <!--android:textColor="@color/white" />-->
+    <!--<Button-->
+    <!--android:id="@+id/pop_btn_font"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_weight="1"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="#b0000000"-->
+    <!--android:text="字体"-->
+    <!--android:textColor="@color/white" />-->
 
     <!--<Button-->
     <!--android:id="@+id/pop_btn_del"-->
     <!--android:layout_width="wrap_content"-->
     <!--android:layout_height="wrap_content"-->
-    <!--android:text="删除" />-->
+    <!--android:layout_weight="1"-->
+    <!--android:background="#b0000000"-->
+    <!--android:text="删除"-->
+    <!--android:textColor="@color/white" />-->
 </LinearLayout>
