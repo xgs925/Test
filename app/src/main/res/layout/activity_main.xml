@@ -14,7 +14,7 @@
     <RelativeLayout
         android:id="@+id/titleBar"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="@dimen/text_main_title_height"
         android:background="#313131">
 
         <Button
@@ -26,7 +26,7 @@
             android:background="@drawable/title_back" />
 
         <Button
-
+            android:id="@+id/done"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
@@ -47,7 +47,7 @@
     <RelativeLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="123dp"
+        android:layout_height="@dimen/text_main_bottom_height"
         android:layout_alignParentBottom="true"
 
         android:background="#212121">
@@ -94,10 +94,9 @@
     <ImageView
         android:id="@+id/mImage"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@id/bottomBar"
-        android:layout_below="@id/titleBar"
-        android:src="@drawable/test1" />
+        android:layout_below="@id/titleBar" />
 
     <HorizontalScrollView
         android:id="@+id/hScroll"
@@ -135,7 +134,7 @@
         <ImageView
             android:id="@+id/shelterTop"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="0px"
             android:layout_alignParentTop="true"
             android:src="@drawable/shelter" />
         <ImageView
