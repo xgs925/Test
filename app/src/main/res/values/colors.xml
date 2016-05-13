@@ -10,4 +10,5 @@
     <color name="btn_normal">#313131</color>
     <color name="btn_pressed">#2fcae1</color>
 
+    <color name="shelter_bg_edit">#88000000</color>
 </resources>

@@ -1,6 +1,7 @@
 package com.photostars.test;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -51,15 +52,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends Activity {
-    private String TAG = "MainActivity";
+public class TextEditActivity extends Activity {
+    private String TAG = "TextEditActivity";
 
     private List<TextView> textViews = new ArrayList<>();//存放所有添加的textview
     private float workspaceCenterX;//工作区终点x坐标
     private float workspaceCenterY;//工作区终点y坐标
     private RelativeLayout mainView;
     private RelativeLayout contentView;
-    private Button addButton;
+    private Button textButton;//文字
+    private Button bgButton;//背景
     //    private PopupWindow popupWindow;
     private TextView choosedView;//选中的view
     private TextView touchAddedView;//touch添加的view
@@ -92,7 +94,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        contentView = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_main, null);
+        contentView = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_text_edit, null);
         setContentView(contentView);
 
         initView();
@@ -137,11 +139,23 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-        addButton = (Button) findViewById(R.id.add_btn);
-        addButton.setOnClickListener(new View.OnClickListener() {
+
+        bgButton= (Button) findViewById(R.id.bg_btn);
+        bgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextView addTextView = new TextView(MainActivity.this);
+                Intent intent=new Intent(TextEditActivity.this,BGEditActivity.class);
+                intent.putExtra("width",photo.getWidth());
+                intent.putExtra("height",photo.getHeight());
+                startActivity(intent);
+            }
+        });
+
+        textButton = (Button) findViewById(R.id.add_btn);
+        textButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView addTextView = new TextView(TextEditActivity.this);
                 addTextView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -198,9 +212,9 @@ public class MainActivity extends Activity {
                         canvas.drawBitmap(photo, null, dst, photoPaint);// 画photo
                         for (TextView textView : textViews) {
 
-                            Paint paint = new Paint();
-                            paint.setTextSize(textView.getTextSize());
-                            Paint.FontMetrics fm = paint.getFontMetrics();
+//                            Paint paint = new Paint();
+//                            paint.setTextSize(textView.getTextSize());
+//                            Paint.FontMetrics fm = paint.getFontMetrics();
                             float offsetX = textView.getX() - workspaceCenterX;
                             float offsetY = textView.getY() - workspaceCenterY ;
 
