@@ -18,54 +18,55 @@ import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
  * Created by Photostsrs on 2016/5/11.
  */
 public class Util {
-    public static Bitmap blurBitmap(Context context,Bitmap bitmap,int percentage){
-        GPUImage gpuImage=new GPUImage(context);
-        gpuImage.setImage(bitmap);
-        gpuImage.setFilter(new GPUImageGaussianBlurFilter((float) ((percentage*10.0)/100)));
-        Bitmap outBitmap= gpuImage.getBitmapWithFilterApplied();
-        return outBitmap;
-    }
-//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 //    public static Bitmap blurBitmap(Context context,Bitmap bitmap,int percentage){
-//
-//        //Let's create an empty bitmap with the same size of the bitmap we want to blur
-//
-//        Bitmap outBitmap;
-//        if(percentage>0&percentage<=100) {
-//             outBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-//        //Instantiate a new Renderscript
-//        RenderScript rs = RenderScript.create(context);
-//
-//        //Create an Intrinsic Blur Script using the Renderscript
-//        ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-//
-//        //Create the Allocations (in/out) with the Renderscript and the in/out bitmaps
-//        Allocation allIn = Allocation.createFromBitmap(rs, bitmap);
-//        Allocation allOut = Allocation.createFromBitmap(rs, outBitmap);
-//
-//        //Set the radius of the blur
-//
-//            blurScript.setRadius((float) (25.f * (percentage * 1.0 / 100)));
-//
-//            //Perform the Renderscript
-//            blurScript.setInput(allIn);
-//            blurScript.forEach(allOut);
-//
-//            //Copy the final bitmap created by the out Allocation to the outBitmap
-//            allOut.copyTo(outBitmap);
-//
-//            //recycle the original bitmap
-////        bitmap.recycle();
-//
-//            //After finishing everything, we destroy the Renderscript.
-//            rs.destroy();
-//        }else {
-//             outBitmap= Bitmap.createScaledBitmap(bitmap,bitmap.getWidth(), bitmap.getHeight(),true);
-//        }
+//        GPUImage gpuImage=new GPUImage(context);
+//        gpuImage.setImage(bitmap);
+//        gpuImage.setFilter(new GPUImageGaussianBlurFilter((float) ((percentage*10.0)/100)));
+//        gpuImage.setFilter(new );
+//        Bitmap outBitmap= gpuImage.getBitmapWithFilterApplied();
 //        return outBitmap;
-//
-//
 //    }
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static Bitmap blurBitmap(Context context,Bitmap bitmap,int percentage){
+
+        //Let's create an empty bitmap with the same size of the bitmap we want to blur
+
+        Bitmap outBitmap;
+        if(percentage>0&percentage<=100) {
+             outBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        //Instantiate a new Renderscript
+        RenderScript rs = RenderScript.create(context);
+
+        //Create an Intrinsic Blur Script using the Renderscript
+        ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+
+        //Create the Allocations (in/out) with the Renderscript and the in/out bitmaps
+        Allocation allIn = Allocation.createFromBitmap(rs, bitmap);
+        Allocation allOut = Allocation.createFromBitmap(rs, outBitmap);
+
+        //Set the radius of the blur
+
+            blurScript.setRadius((float) (25.f * (percentage * 1.0 / 100)));
+
+            //Perform the Renderscript
+            blurScript.setInput(allIn);
+            blurScript.forEach(allOut);
+
+            //Copy the final bitmap created by the out Allocation to the outBitmap
+            allOut.copyTo(outBitmap);
+
+            //recycle the original bitmap
+//        bitmap.recycle();
+
+            //After finishing everything, we destroy the Renderscript.
+            rs.destroy();
+        }else {
+             outBitmap= Bitmap.createScaledBitmap(bitmap,bitmap.getWidth(), bitmap.getHeight(),true);
+        }
+        return outBitmap;
+
+
+    }
 
     /**
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)

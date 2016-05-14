@@ -229,9 +229,10 @@ public class PhotoView extends ImageView {
         if (!hasDrawable) {
             hasDrawable = true;
         }
-
-        initBase();
+        if (firstTime)
+            initBase();
     }
+    boolean firstTime=true;
 
     private boolean hasSize(Drawable d) {
         if ((d.getIntrinsicHeight() <= 0 || d.getIntrinsicWidth() <= 0)
@@ -257,6 +258,7 @@ public class PhotoView extends ImageView {
     }
 
     private void initBase() {
+        firstTime=false;
         if (!hasDrawable) return;
         if (!isKnowSize) return;
 
@@ -640,15 +642,16 @@ public class PhotoView extends ImageView {
     float photeScale;//显示图片与原图比
     int photoViewWidth;
     int photoViewHeight;
+
     public void setMLayoutParams(ViewGroup.LayoutParams params) {
         super.setLayoutParams(params);
-         photoViewWidth = params.width;
-         photoViewHeight = params.height;
+        photoViewWidth = params.width;
+        photoViewHeight = params.height;
         Matrix matrix = getImageMatrix();
         float[] values = new float[9];
         matrix.getValues(values);
 
-         photeScale = values[0];
+        photeScale = values[0];
         float cx = mImgRect.left + mImgRect.width() / 2;
         float cy = mImgRect.top + mImgRect.height() / 2;
         if (orPhoto.getWidth() * photeScale < photoViewWidth) {
@@ -705,8 +708,8 @@ public class PhotoView extends ImageView {
 
     public void translateTo(float[] values) {
 
-        float transX = values[2]+photoViewWidth/2 -orPhoto.getWidth() * photeScale/2;
-        float transY = values[5]+photoViewHeight/2 -orPhoto.getHeight() * photeScale/2;
+        float transX = values[2] + photoViewWidth / 2 - orPhoto.getWidth() * photeScale / 2;
+        float transY = values[5] + photoViewHeight / 2 - orPhoto.getHeight() * photeScale / 2;
         mAnimaMatrix.postTranslate(transX, transY);
         mTranslateX += transX;
         mTranslateY += transY;
