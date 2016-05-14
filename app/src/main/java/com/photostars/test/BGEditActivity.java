@@ -1,6 +1,5 @@
 package com.photostars.test;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,8 +9,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,7 +35,8 @@ public class BGEditActivity extends Activity {
     private int photoViewWidth;
     private int photoViewHeight;
     private int direction = 0;//view方向（下为正）0:下 1：左 2：上 3：右
-    private Bitmap photo;
+    private Bitmap orPhoto;
+    RelativeLayout workView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +80,9 @@ public class BGEditActivity extends Activity {
 
     private void initView() {
         initBtn();
-        photoView = (PhotoView) findViewById(R.id.photoview);
-        photoView.enable();
+        workView = (RelativeLayout) findViewById(R.id.workView);
+//        photoView = (PhotoView) findViewById(R.id.photoview);
+
 //        workView= (ScrollView) findViewById(R.id.workView);
 //        targetImage= (ImageView) findViewById(R.id.targetImage);
 //        targetImage = (ImageView) findViewById(R.id.targetImage);
@@ -90,18 +91,18 @@ public class BGEditActivity extends Activity {
         workHeight = getWindowManager().getDefaultDisplay().getHeight() - Util.dip2px(this, 223);
         initShelter(getIntent().getIntExtra("width", 0), getIntent().getIntExtra("height", 0));
 
-          photo = BitmapFactory.decodeResource(getResources(), R.drawable.test1);
-        photoView.setImageBitmap(photo);
-        Log.d(Tag, "photo.getWidth()" + photo.getWidth());
-        Log.d(Tag, "photo.getHeight()" + photo.getHeight());
+        orPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.test1);
+        Bitmap blurBitmap = Util.blurBitmap(getBaseContext(), orPhoto, 0);
+        initPhotoView(blurBitmap);
+
         Matrix matrix = photoView.getImageMatrix();
-        float[] values = new float[9];
+         float[] values = new float[9];
         matrix.getValues(values);
         Log.d(Tag, "matrix" + values[0]);
         Log.d(Tag, "visibleWidth" + visibleWidth);
         Log.d(Tag, "visibleHeight" + visibleHeight);
 
-        SeekBar rotateBar = (SeekBar) findViewById(R.id.rotateBar);
+        final SeekBar rotateBar = (SeekBar) findViewById(R.id.rotateBar);
         rotateBar.setMax(90);
         rotateBar.setProgress(45);
         rotateBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -129,40 +130,94 @@ public class BGEditActivity extends Activity {
             }
         });
 
-        final SeekBar blurBar= (SeekBar) findViewById(R.id.blurBar);
+        final SeekBar blurBar = (SeekBar) findViewById(R.id.blurBar);
         blurBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             Matrix matrix;
-            int blur=0;
+            int blur = 0;
+            float[] values = new float[9];
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                blur=i;
+                blur = i;
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                matrix=new Matrix(photoView.getImageMatrix());
+                matrix = new Matrix(photoView.getImageMatrix());
+                matrix.getValues(values);
+                Log.d(Tag,values[2]+"|"+values[5]);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                Bitmap blurBitmap=Util.blurBitmap(getBaseContext(),photo,blur);
-//                photoView.init();
-//                if(blur==0){
-//                    photoView.setImageBitmap(photo);
-//                }else {
-//                    photoView.setImageBitmap(blurBitmap);
+//                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams((int)Math.ceil(visibleWidth), (int)Math.ceil(visibleHeight));
+//                lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+//                photoView.setMLayoutParams(lp);
+//               int currentDegree1=0;
+//                if (direction == 0 | direction == 2) {
+//                    updateSize(currentDegree1);
+//                } else {
+//                    updateSize(90 - Math.abs(currentDegree1));
+//
 //                }
+//                photoView.setRotation(currentDegree1 + direction * 90);
+                Bitmap blurBitmap = Util.blurBitmap(getBaseContext(), orPhoto, blur);
+                photoView.setImageBitmap(blurBitmap);
+//                initPhotoView(blurBitmap);
+//                currentDegree=0;
+//                if (direction == 0 | direction == 2) {
+//                    updateSize(currentDegree);
+//                } else {
+//                    updateSize(90 - Math.abs(currentDegree));
+//
+//                }
+//                photoView.setRotation(currentDegree + direction * 90);
+
+
+//                photoView.setVisibility(View.INVISIBLE);
+//                Handler handler = new Handler();
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (direction == 0 | direction == 2) {
+//                            updateSize(currentDegree);
+//                        } else {
+//                            updateSize(90 - Math.abs(currentDegree));
+//
+//                        }
+//                        photoView.setRotation(currentDegree + direction * 90);
+//                        photoView.setImageMatrix(matrix);
+//                        photoView.setVisibility(View.VISIBLE);
+//                    }
+//                });
+
+
+//                photoView.setImageBitmap(blurBitmap);
+//                photoView.setImageMatrix(matrix);
+//                Log.d(Tag,blurBitmap.getWidth()+"blurBitmap.getWidth()");
             }
         });
     }
 
+    private void initPhotoView(Bitmap bm) {
+        photoView = new PhotoView(this);
+        photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        photoView.enable();
+        workView.removeAllViews();
+        workView.addView(photoView);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams((int) visibleWidth, (int) visibleHeight);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        photoView.setLayoutParams(lp);
+        photoView.setImageBitmap(bm);
+    }
+
 
     private void initBtn() {
-        Button done= (Button) findViewById(R.id.done);
+        Button done = (Button) findViewById(R.id.done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                photo=Util.blurBitmap(getBaseContext(),photo,50);
+                orPhoto = Util.blurBitmap(getBaseContext(), orPhoto, 50);
                 photoView.refreshDrawableState();
             }
         });
@@ -270,7 +325,6 @@ public class BGEditActivity extends Activity {
         photoViewHeight = (int) visibleHeight;
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams((int) visibleWidth, (int) visibleHeight);
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        photoView.setLayoutParams(lp);
         visibleView.setLayoutParams(new RelativeLayout.LayoutParams((int) visibleWidth, (int) visibleHeight));
 
         int x = (int) ((workWidth - visibleWidth) / 2.0);

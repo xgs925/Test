@@ -24,5 +24,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile project(':photoview')
 }
