@@ -1,23 +1,72 @@
 package com.photostars.test;
 
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
+import android.os.Environment;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 
-import jp.co.cyberagent.android.gpuimage.GPUImage;
-import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+//import jp.co.cyberagent.android.gpuimage.GPUImage;
+//import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
 
 /**
  * Created by Photostsrs on 2016/5/11.
  */
 public class Util {
+    public static void saveMyBitmap(Activity context, Bitmap bitmap, String bitName) {
+        int REQUEST_EXTERNAL_STORAGE = 1;
+        String[] PERMISSIONS_STORAGE = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    context,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+
+        String dir= "/sdcard/test/";
+        File destDir = new File(dir);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        File f = new File(dir + bitName + ".png");
+        FileOutputStream fOut = null;
+        try {
+            f.createNewFile();
+            fOut = new FileOutputStream(f);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
 //    public static Bitmap blurBitmap(Context context,Bitmap bitmap,int percentage){
 //        GPUImage gpuImage=new GPUImage(context);
 //        gpuImage.setImage(bitmap);

@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -96,7 +100,7 @@ public class BGEditActivity extends Activity {
         initPhotoView(blurBitmap);
 
         Matrix matrix = photoView.getImageMatrix();
-         float[] values = new float[9];
+        float[] values = new float[9];
         matrix.getValues(values);
         Log.d(Tag, "matrix" + values[0]);
         Log.d(Tag, "visibleWidth" + visibleWidth);
@@ -145,7 +149,7 @@ public class BGEditActivity extends Activity {
             public void onStartTrackingTouch(SeekBar seekBar) {
                 matrix = new Matrix(photoView.getImageMatrix());
                 matrix.getValues(values);
-                Log.d(Tag,values[2]+"|"+values[5]);
+                Log.d(Tag, values[2] + "|" + values[5]);
             }
 
             @Override
@@ -217,8 +221,27 @@ public class BGEditActivity extends Activity {
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                orPhoto = Util.blurBitmap(getBaseContext(), orPhoto, 50);
-                photoView.refreshDrawableState();
+                float[] values = new float[9];
+                photoView.getImageMatrix().getValues(values);
+                Bitmap cropBtimap = Bitmap.createBitmap(orPhoto, (int) Math.abs(values[2] / values[0]), (int) Math.abs(values[5] / values[0]), (int) (photoViewWidth / values[0]), (int) (photoViewHeight / values[0]));
+                float cx = cropBtimap.getWidth() / 2;
+                float cy = cropBtimap.getHeight() / 2;
+                RectF rectF = new RectF(cx - visibleWidth / values[0] / 2, cy - visibleHeight / values[0] / 2, cx + visibleWidth / values[0] / 2, cy + visibleHeight / values[0] / 2);
+
+                Matrix m=new Matrix();
+                m.postRotate(currentDegree,cx,cy);
+                m.postScale(2,2);
+                Bitmap b=Bitmap.createBitmap(cropBtimap,0,0,(int) rectF.width(), (int) rectF.height(),m,true);
+
+//                Bitmap b=Bitmap.createBitmap(cropBtimap.getWidth(),cropBtimap.getHeight(),Bitmap.Config.ARGB_8888);
+//                Canvas canvas = new Canvas(b);
+//                canvas.rotate(direction * 90 + currentDegree, cx, cy);
+//                Paint paint = new Paint();
+//                paint.setColor(Color.BLACK);
+//                canvas.drawRect(rectF,paint);
+//                canvas.clipRect(rectF);
+//                canvas.drawBitmap(cropBtimap,new Matrix(),paint);
+                Util.saveMyBitmap(BGEditActivity.this, b, "test");
             }
         });
         ImageView leftRotate = (ImageView) findViewById(R.id.leftRotate);
