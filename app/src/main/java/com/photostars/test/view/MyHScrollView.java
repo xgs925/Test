@@ -1,4 +1,4 @@
-package com.photostars.test;
+package com.photostars.test.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

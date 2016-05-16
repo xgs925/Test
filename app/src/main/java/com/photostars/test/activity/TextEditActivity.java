@@ -1,4 +1,4 @@
-package com.photostars.test;
+package com.photostars.test.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -44,6 +44,11 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.photostars.test.Constant;
+import com.photostars.test.adapter.FontListViewAdapter;
+import com.photostars.test.R;
+import com.photostars.test.Util;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -76,10 +81,7 @@ public class TextEditActivity extends Activity {
     //    private View currentButtonView;
     private float mainViewOffset;
 
-    String[] colors = {"#000000", "#626262", "#a0a0a0", "#d2d2d2", "#ffffff", "#7d0100", "#e60111", "#ea6200", "#f39900", "#fff200",
-            "#fff899", "#b4d565", "#8ec51f", "#21ae37", "#009a43", "#009f96", "#7dcef4", "#0069b7", "#01489d", "#1c2188",
-            "#440163", "#601a87", "#8858a1", "#a98bbc", "#c391bf", "#f19fc2", "#ea6aa2", "#e4017f", "#a4005a", "#7d0121",
-            "#e5014f", "#ea6a76"};
+
     private int minTextSize = 20;
     private int maxTextSize = 150;
 
@@ -140,14 +142,18 @@ public class TextEditActivity extends Activity {
             }
         });
 
-        bgButton= (Button) findViewById(R.id.bg_btn);
+        bgButton = (Button) findViewById(R.id.bg_btn);
         bgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(TextEditActivity.this,BGEditActivity.class);
-                intent.putExtra("width",photo.getWidth());
-                intent.putExtra("height",photo.getHeight());
-                startActivity(intent);
+
+                Intent intent = new Intent(TextEditActivity.this, AlbumActivity.class);
+                startActivityForResult(intent, Constant.ALBUM_REQUEST_CODE);
+
+//                Intent intent = new Intent(TextEditActivity.this, BGEditActivity.class);
+//                intent.putExtra("width", photo.getWidth());
+//                intent.putExtra("height", photo.getHeight());
+//                startActivityForResult(intent, Constant.BG_EDIT_REQUEST_CODE);
             }
         });
 
@@ -216,7 +222,7 @@ public class TextEditActivity extends Activity {
 //                            paint.setTextSize(textView.getTextSize());
 //                            Paint.FontMetrics fm = paint.getFontMetrics();
                             float offsetX = textView.getX() - workspaceCenterX;
-                            float offsetY = textView.getY() - workspaceCenterY ;
+                            float offsetY = textView.getY() - workspaceCenterY;
 
                             TextPaint textPaint = new TextPaint();// 设置画笔
                             textPaint.setTextSize((float) Math.floor(textView.getTextSize() / scale));// 字体大小
@@ -230,20 +236,20 @@ public class TextEditActivity extends Activity {
                             Layout.Alignment alignment = null;
                             switch (textView.getGravity()) {
                                 case Gravity.LEFT | 51:
-                                    alignment=Layout.Alignment.ALIGN_NORMAL;
+                                    alignment = Layout.Alignment.ALIGN_NORMAL;
                                     break;
                                 case Gravity.CENTER:
-                                    alignment=Layout.Alignment.ALIGN_CENTER;
+                                    alignment = Layout.Alignment.ALIGN_CENTER;
                                     break;
                                 case Gravity.RIGHT | 53:
-                                    alignment=Layout.Alignment.ALIGN_OPPOSITE;
+                                    alignment = Layout.Alignment.ALIGN_OPPOSITE;
                                     break;
                             }
 
                             StaticLayout layout = new StaticLayout(textView.getText(), textPaint, (int) ((int) (textView.getWidth() / scale) + Math.ceil(1 / scale)),//防止误差+Math.ceil(1/scale)
                                     alignment, 1.0F, 0.0F, true);
                             canvas.save();
-                            canvas.translate(offsetX / scale + width / 2, offsetY/ scale+hight/2);
+                            canvas.translate(offsetX / scale + width / 2, offsetY / scale + hight / 2);
                             canvas.rotate(textView.getRotation(), (textView.getPivotX()) / scale, (textView.getPivotY()) / scale);
                             layout.draw(canvas);
 
@@ -288,8 +294,8 @@ public class TextEditActivity extends Activity {
         ImageView t = (ImageView) findViewById(R.id.shelterTop);
         ImageView b = (ImageView) findViewById(R.id.shelterBottom);
         Bitmap orPhoto = BitmapFactory.decodeResource(this.getResources(), R.drawable.test);
-        Point point=Util.ImageSampleFun(orPhoto.getWidth(),orPhoto.getHeight(),2,3);
-        photo=Bitmap.createScaledBitmap(orPhoto,point.x,point.y,true);
+        Point point = Util.ImageSampleFun(orPhoto.getWidth(), orPhoto.getHeight(), 2, 3);
+        photo = Bitmap.createScaledBitmap(orPhoto, point.x, point.y, true);
         int photoWidth = photo.getWidth();
         int photoHeight = photo.getHeight();
         mImageView.setImageBitmap(photo);
@@ -482,12 +488,12 @@ public class TextEditActivity extends Activity {
         textSizeView.setText((int) choosedView.getTextSize() + "");
         SeekBar sizeBar = (SeekBar) styleView.findViewById(R.id.sizeBar);
         sizeBar.setMax(maxTextSize - minTextSize);
-        int progress=((int) choosedView.getTextSize() - minTextSize) > (maxTextSize - minTextSize) ? (maxTextSize - minTextSize) : ((int) choosedView.getTextSize() - minTextSize);
+        int progress = ((int) choosedView.getTextSize() - minTextSize) > (maxTextSize - minTextSize) ? (maxTextSize - minTextSize) : ((int) choosedView.getTextSize() - minTextSize);
         sizeBar.setProgress(progress);
         sizeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                choosedView.setTextSize(TypedValue.COMPLEX_UNIT_PX,i + minTextSize);
+                choosedView.setTextSize(TypedValue.COMPLEX_UNIT_PX, i + minTextSize);
                 textSizeView.setText(i + minTextSize + "");
             }
 
@@ -513,9 +519,9 @@ public class TextEditActivity extends Activity {
 //颜色
         final LinearLayout colorLayout = (LinearLayout) styleView.findViewById(R.id.colorLayout);
 
-        for (int i = 0; i < colors.length; i++) {
+        for (int i = 0; i < Constant.colors.length; i++) {
             ImageView imageView = new ImageView(getBaseContext());
-            imageView.setBackgroundDrawable(new ColorDrawable(Color.parseColor(colors[i])));
+            imageView.setBackgroundDrawable(new ColorDrawable(Color.parseColor(Constant.colors[i])));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1);
             imageView.setLayoutParams(lp);
             colorLayout.addView(imageView);
@@ -539,10 +545,10 @@ public class TextEditActivity extends Activity {
                 boolean isInViewRect = rect.contains(x, y);
 
                 if (isInViewRect) {
-                    float w = view.getWidth() / colors.length;
+                    float w = view.getWidth() / Constant.colors.length;
                     int i = (int) Math.ceil((x - location[0]) / w);
-                    if (i <= colors.length) {
-                        int color = Color.parseColor(colors[i - 1]);
+                    if (i <= Constant.colors.length) {
+                        int color = Color.parseColor(Constant.colors[i - 1]);
                         ColorStateList colorStateList = ColorStateList.valueOf(color);
                         choosedView.setTextColor(colorStateList.withAlpha(choosedTextalpha));
                     }
@@ -809,4 +815,24 @@ public class TextEditActivity extends Activity {
         preDegree = degree;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case Constant.ALBUM_REQUEST_CODE:
+                    Intent intent = new Intent(TextEditActivity.this, BGEditActivity.class);
+                    intent.putExtra("width", photo.getWidth());
+                    intent.putExtra("height", photo.getHeight());
+                    startActivityForResult(intent, Constant.BG_EDIT_REQUEST_CODE);
+                    break;
+
+                case Constant.BG_EDIT_REQUEST_CODE:
+                    byte[] bis = data.getByteArrayExtra("bg");
+                    photo = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+                    mImageView.setImageBitmap(photo);
+                    break;
+            }
+        }
+    }
 }

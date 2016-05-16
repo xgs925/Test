@@ -1,4 +1,4 @@
-package com.photostars.test;
+package com.photostars.test.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -8,21 +8,25 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.photostars.test.R;
+
+import java.util.List;
+
 /**
  * Created by Photostsrs on 2016/5/6.
  */
-public class FontListViewAdapter extends BaseAdapter {
+public class AlbumListViewAdapter extends BaseAdapter {
     Context context;
-    Typeface[] fonts;
+    List<String> paths;
 
-    public FontListViewAdapter(Context context, Typeface[] fonts) {
+    public AlbumListViewAdapter(Context context, List<String> paths) {
         this.context = context;
-        this.fonts = fonts;
+        this.paths = paths;
     }
 
     @Override
     public int getCount() {
-        return fonts.length;
+        return paths.size();
     }
 
     @Override
@@ -37,9 +41,9 @@ public class FontListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        view=LayoutInflater.from(context).inflate(R.layout.font_list_item,null);
-        TextView fontTextView= (TextView) view.findViewById(R.id.fontText);
-        fontTextView.setTypeface(fonts[i]);
+        view=LayoutInflater.from(context).inflate(R.layout.item_album_list,null);
+        TextView pathName= (TextView) view.findViewById(R.id.pathName);
+        pathName.setText(paths.get(i));
         return view;
     }
 }
