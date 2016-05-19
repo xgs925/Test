@@ -1,4 +1,4 @@
-package com.photostars.test;
+package com.photostars.test.utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

@@ -2,15 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp"
+    android:padding="3dp"
     tools:context="com.photostars.test.fragment.LocalAlbumFragment">
 
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:horizontalSpacing="2dp"
-        android:verticalSpacing="2dp"
+        android:horizontalSpacing="3dp"
+        android:verticalSpacing="3dp"
         android:numColumns="4"></GridView>
 
 </FrameLayout>

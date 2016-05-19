@@ -22,10 +22,13 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 import com.bm.library.PhotoView;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.photostars.test.view.MyHScrollView;
 import com.photostars.test.view.MyVScrollView;
 import com.photostars.test.R;
-import com.photostars.test.Util;
+import com.photostars.test.utils.Util;
 
 import java.io.ByteArrayOutputStream;
 
@@ -44,6 +47,8 @@ public class BGEditActivity extends Activity {
     private int photoViewHeight;
     private int direction = 0;//view方向（下为正）0:下 1：左 2：上 3：右
     private Bitmap orPhoto;
+    float initPhotoWidth;
+    float initPhotoHeight;
     RelativeLayout workView;
     private boolean invertH = false;
     private boolean invertV = false;
@@ -53,7 +58,40 @@ public class BGEditActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bg_edit);
-        initView();
+
+        Intent data = getIntent();
+        String path = data.getStringExtra("path");
+        if (path.startsWith("/")) {//本地图片
+            orPhoto = BitmapFactory.decodeFile(path);
+            initView();
+        } else {//网络图片
+            ImageLoader.getInstance().loadImage(path, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
+                }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    orPhoto = bitmap;
+                    initView();
+                }
+
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+                }
+            });
+        }
+
+
+    }
+
+    private void initPhoto() {
+        Point point = Util.ImageSampleFun(orPhoto.getWidth(), orPhoto.getHeight(), 2, 3);
+        orPhoto = Bitmap.createScaledBitmap(orPhoto, point.x, point.y, true);
     }
 
     @Override
@@ -90,6 +128,7 @@ public class BGEditActivity extends Activity {
     }
 
     private void initView() {
+        initPhoto();
         initBtn();
         workView = (RelativeLayout) findViewById(R.id.workView);
 //        photoView = (PhotoView) findViewById(R.id.photoview);
@@ -102,7 +141,6 @@ public class BGEditActivity extends Activity {
         workHeight = getWindowManager().getDefaultDisplay().getHeight() - Util.dip2px(this, 223);
         initShelter(getIntent().getIntExtra("width", 0), getIntent().getIntExtra("height", 0));
 
-        orPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.test1);
         Bitmap blurBitmap = Util.blurBitmap(getBaseContext(), orPhoto, 0);
         initPhotoView(blurBitmap);
 
@@ -160,51 +198,8 @@ public class BGEditActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams((int)Math.ceil(visibleWidth), (int)Math.ceil(visibleHeight));
-//                lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-//                photoView.setMLayoutParams(lp);
-//               int currentDegree1=0;
-//                if (direction == 0 | direction == 2) {
-//                    updateSize(currentDegree1);
-//                } else {
-//                    updateSize(90 - Math.abs(currentDegree1));
-//
-//                }
-//                photoView.setRotation(currentDegree1 + direction * 90);
                 Bitmap blurBitmap = Util.blurBitmap(getBaseContext(), orPhoto, percentage);
                 photoView.setImageBitmap(blurBitmap);
-//                initPhotoView(blurBitmap);
-//                currentDegree=0;
-//                if (direction == 0 | direction == 2) {
-//                    updateSize(currentDegree);
-//                } else {
-//                    updateSize(90 - Math.abs(currentDegree));
-//
-//                }
-//                photoView.setRotation(currentDegree + direction * 90);
-
-
-//                photoView.setVisibility(View.INVISIBLE);
-//                Handler handler = new Handler();
-//                handler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if (direction == 0 | direction == 2) {
-//                            updateSize(currentDegree);
-//                        } else {
-//                            updateSize(90 - Math.abs(currentDegree));
-//
-//                        }
-//                        photoView.setRotation(currentDegree + direction * 90);
-//                        photoView.setImageMatrix(matrix);
-//                        photoView.setVisibility(View.VISIBLE);
-//                    }
-//                });
-
-
-//                photoView.setImageBitmap(blurBitmap);
-//                photoView.setImageMatrix(matrix);
-//                Log.d(Tag,blurBitmap.getWidth()+"blurBitmap.getWidth()");
             }
         });
     }
@@ -219,11 +214,27 @@ public class BGEditActivity extends Activity {
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
         photoView.setLayoutParams(lp);
         photoView.setImageBitmap(bm);
+
+        float[] values = new float[9];
+        photoView.getImageMatrix().getValues(values);
+        if(bm.getWidth()*1.0/bm.getHeight()>visibleWidth*1.0/visibleHeight){
+            initPhotoHeight=visibleHeight;
+            initPhotoWidth= (float) (initPhotoHeight*(bm.getWidth()*1.0/bm.getHeight()));
+        }else {
+            initPhotoWidth=visibleWidth;
+            initPhotoHeight= (float) (initPhotoWidth*(bm.getHeight()*1.0/bm.getWidth()));
+        }
     }
 
-
     private void initBtn() {
-        Button done = (Button) findViewById(R.id.done);
+        View back = findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        View done =findViewById(R.id.done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -237,12 +248,12 @@ public class BGEditActivity extends Activity {
                 float[] values = new float[9];
                 photoView.getImageMatrix().getValues(values);
                 int x = (int) Math.floor(Math.abs(values[2] / values[0]));
-                int y=(int) Math.floor(Math.abs(values[5] / values[0]));
-                int width=(int) Math.floor(photoViewWidth / values[0]);
-                int height= (int) Math.floor(photoViewHeight / values[0]);
-                if(x+width>orPhoto.getWidth()) width=orPhoto.getWidth()-x;
-                if(y+height>orPhoto.getHeight()) height=orPhoto.getHeight()-y;
-                Bitmap cropBtimap = Bitmap.createBitmap(orPhoto, x ,y ,width ,height);
+                int y = (int) Math.floor(Math.abs(values[5] / values[0]));
+                int width = (int) Math.floor(photoViewWidth / values[0]);
+                int height = (int) Math.floor(photoViewHeight / values[0]);
+                if (x + width > orPhoto.getWidth()) width = orPhoto.getWidth() - x;
+                if (y + height > orPhoto.getHeight()) height = orPhoto.getHeight() - y;
+                Bitmap cropBtimap = Bitmap.createBitmap(orPhoto, x, y, width, height);
                 Matrix m = new Matrix();
                 if (invertH) m.postScale(-1, 1);
                 if (invertV) m.postScale(1, -1);
@@ -426,7 +437,17 @@ public class BGEditActivity extends Activity {
         photoView.setMLayoutParams(lp);
         float currentMinScaleW = photoViewWidth / visibleWidth;
         float currentMinScaleH = photoViewHeight / visibleHeight;
-        photoView.setCurrentMinScale(currentMinScaleW < currentMinScaleH ? currentMinScaleW : currentMinScaleH);
+        float[] values = new float[9];
+        photoView.getImageMatrix().getValues(values);
+//        if(orPhoto.getWidth()*1.0/orPhoto.getHeight()<photoViewWidth*1.0/photoViewHeight){
+//            photoView.setCurrentMinScale(currentMinScaleW);
+//        }else{
+//            photoView.setCurrentMinScale(currentMinScaleH);
+//        }
+//        Log.d(Tag,""+values[0]*orPhoto.getWidth()+"|"+values[0]*orPhoto.getHeight()+"|"+photoViewWidth+"|"+photoViewHeight);
+         currentMinScaleW = photoViewWidth / initPhotoWidth;
+         currentMinScaleH = photoViewHeight / initPhotoHeight;
+        photoView.setCurrentMinScale(currentMinScaleW > currentMinScaleH ? currentMinScaleW : currentMinScaleH);
     }
 
     /**

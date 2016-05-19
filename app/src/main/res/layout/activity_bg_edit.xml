@@ -58,16 +58,25 @@
         android:layout_height="@dimen/text_main_title_height"
         android:background="#313131">
 
-        <Button
+        <View
+            android:id="@+id/back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
 
+        <View
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
             android:background="@drawable/title_back" />
 
-        <Button
+        <View
             android:id="@+id/done"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true" />
+
+        <View
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentRight="true"

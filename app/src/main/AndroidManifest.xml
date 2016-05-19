@@ -4,8 +4,9 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <!--注意application需要添加AppContext-->
+    <!-- 注意application需要添加AppContext -->
     <application
         android:name=".AppContext"
         android:allowBackup="true"
@@ -14,11 +15,11 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
         <activity android:name=".activity.TextEditActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
@@ -29,7 +30,14 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".activity.BGEditActivity" />
-        <activity android:name=".activity.AlbumActivity"></activity>
+        <activity android:name=".activity.AlbumActivity" />
+        <activity android:name=".activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

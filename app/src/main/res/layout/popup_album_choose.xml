@@ -2,16 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/btn2View"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="320dp"
     android:orientation="vertical">
+<RelativeLayout
+    android:id="@+id/dismiss"
+    android:background="#212121"
+    android:layout_width="match_parent"
+    android:layout_height="51dp">
 
     <TextView
         android:id="@+id/albumName"
         android:text="选择相册"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="17sp"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="51dp" />
+    <ImageView
+        android:layout_width="14dp"
+        android:layout_height="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="25dp"
+        android:rotation="180"
+        android:src="@drawable/up_arrow_pop" />
+</RelativeLayout>
 
     <ListView
         android:id="@+id/pathList"
@@ -20,7 +35,5 @@
         android:background="#212121"
         android:divider="#424242"
         android:dividerHeight="1dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
         android:scrollbars="none"></ListView>
 </LinearLayout>

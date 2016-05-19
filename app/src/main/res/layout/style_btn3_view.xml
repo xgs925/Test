@@ -24,25 +24,28 @@
         android:clickable="false">
 
         <ImageView
+            android:id="@+id/alignLeftImage"
             android:layout_width="23dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:src="@drawable/left_justified_selection" />
+            android:src="@drawable/left_justified" />
 
         <ImageView
+            android:id="@+id/alignCenterImage"
             android:layout_width="23dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:src="@drawable/center_justified_selection" />
+            android:src="@drawable/center_justified" />
 
         <ImageView
+            android:id="@+id/alignRightImage"
             android:layout_width="23dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:src="@drawable/right_justified_selection" />
+            android:src="@drawable/right_justified" />
     </LinearLayout>
 
     <RadioGroup

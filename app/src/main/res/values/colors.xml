@@ -11,4 +11,8 @@
     <color name="btn_pressed">#2fcae1</color>
 
     <color name="shelter_bg_edit">#88000000</color>
+
+    <color name="main_blue">#2fcae1</color>
+    <color name="not_select_text">#909090</color>
+
 </resources>

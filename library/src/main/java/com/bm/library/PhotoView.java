@@ -232,7 +232,8 @@ public class PhotoView extends ImageView {
         if (firstTime)
             initBase();
     }
-    boolean firstTime=true;
+
+    boolean firstTime = true;
 
     private boolean hasSize(Drawable d) {
         if ((d.getIntrinsicHeight() <= 0 || d.getIntrinsicWidth() <= 0)
@@ -258,7 +259,7 @@ public class PhotoView extends ImageView {
     }
 
     private void initBase() {
-        firstTime=false;
+        firstTime = false;
         if (!hasDrawable) return;
         if (!isKnowSize) return;
 
@@ -654,56 +655,64 @@ public class PhotoView extends ImageView {
         photeScale = values[0];
         float cx = mImgRect.left + mImgRect.width() / 2;
         float cy = mImgRect.top + mImgRect.height() / 2;
-        if (orPhoto.getWidth() * photeScale < photoViewWidth) {
+        boolean widthshort=orPhoto.getWidth() * photeScale < photoViewWidth;
+        boolean heightshort=orPhoto.getHeight() * photeScale < photoViewHeight;
+        if (widthshort) {
             float scaleFactor = (float) (photoViewWidth * 1.0 / (orPhoto.getWidth() * photeScale));
             mScale *= scaleFactor;
-            mAnimaMatrix.postScale(scaleFactor, scaleFactor, cx, cy);
+            mAnimaMatrix.postScale(scaleFactor, scaleFactor);
             executeTranslate();
-        } else if (orPhoto.getHeight() * photeScale < photoViewHeight) {
+        }
+        if (heightshort) {
 
             float scaleFactor = (float) (photoViewHeight * 1.0 / (orPhoto.getHeight() * photeScale));
             mScale *= scaleFactor;
-            mAnimaMatrix.postScale(scaleFactor, scaleFactor, cx, cy);
+            mAnimaMatrix.postScale(scaleFactor, scaleFactor);
             executeTranslate();
+        }
+        if (!widthshort&!heightshort) {
+            //平移图片，保证图片在view里中点不变
+            if (preWidth != 0) {
+                int transX = (photoViewWidth - preWidth) / 2;
+                int transY = (photoViewHeight - preHeight) / 2;
+                Log.d(Tag, "transX" + transX);
+                mAnimaMatrix.postTranslate(transX, transY);
+                mTranslateX += transX;
+                mTranslateY += transY;
+                executeTranslate();
+            }
+            preWidth = photoViewWidth;
+            preHeight = photoViewHeight;
+
+            float left = -values[2];
+            float top = -values[5];
+            float bottom = photoViewHeight - values[5] - orPhoto.getHeight() * photeScale;
+            float right = (photoViewWidth - values[2]) - orPhoto.getWidth() * photeScale;
+            if (left < 0) {
+                mAnimaMatrix.postTranslate(left, 0);
+                mTranslateX += left;
+                executeTranslate();
+            }
+
+            if (top < 0) {
+                mAnimaMatrix.postTranslate(0, top);
+                mTranslateY += top;
+                executeTranslate();
+            }
+
+            if (bottom > 0) {//view超出图片最下端 图片下移
+                mAnimaMatrix.postTranslate(0, bottom);
+                mTranslateY += bottom;
+                executeTranslate();
+            }
+
+            if (right > 0) {//view超出图片最右端 图片右移
+                mAnimaMatrix.postTranslate(right, 0);
+                mTranslateX += right;
+                executeTranslate();
+            }
         }
 
-        //平移图片，保证图片在view里中点不变
-        if (preWidth != 0) {
-            int transX = (photoViewWidth - preWidth) / 2;
-            int transY = (photoViewHeight - preHeight) / 2;
-            Log.d(Tag, "transX" + transX);
-            mAnimaMatrix.postTranslate(transX, transY);
-            mTranslateX += transX;
-            mTranslateY += transY;
-            executeTranslate();
-        }
-        preWidth = photoViewWidth;
-        preHeight = photoViewHeight;
-
-        float left = -values[2];
-        if (left < 0) {
-            mAnimaMatrix.postTranslate(left, 0);
-            mTranslateX += left;
-            executeTranslate();
-        }
-        float top = -values[5];
-        if (top < 0) {
-            mAnimaMatrix.postTranslate(0, top);
-            mTranslateY += top;
-            executeTranslate();
-        }
-        float bottom = photoViewHeight - values[5] - orPhoto.getHeight() * photeScale;
-        if (bottom > 0) {//view超出图片最下端 图片下移
-            mAnimaMatrix.postTranslate(0, bottom);
-            mTranslateY += bottom;
-            executeTranslate();
-        }
-        float right = (photoViewWidth - values[2]) - orPhoto.getWidth() * photeScale;
-        if (right > 0) {//view超出图片最右端 图片右移
-            mAnimaMatrix.postTranslate(right, 0);
-            mTranslateX += right;
-            executeTranslate();
-        }
     }
 
     public void translateTo(float[] values) {

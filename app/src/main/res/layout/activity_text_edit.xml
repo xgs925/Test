@@ -11,37 +11,6 @@
     <!--android:background="@android:color/holo_orange_dark">-->
 
     <!--</RelativeLayout>-->
-    <RelativeLayout
-        android:id="@+id/titleBar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/text_main_title_height"
-        android:background="#313131">
-
-        <Button
-
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="15dp"
-            android:background="@drawable/title_back" />
-
-        <Button
-            android:id="@+id/done"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
-            android:background="@drawable/title_done" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="文字"
-            android:textColor="#ffffff"
-            android:textSize="18sp" />
-    </RelativeLayout>
 
 
     <RelativeLayout
@@ -96,14 +65,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomBar"
-        android:layout_below="@id/titleBar" />
+        android:layout_marginTop="@dimen/text_main_title_height" />
 
     <HorizontalScrollView
         android:id="@+id/hScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomBar"
-        android:layout_below="@id/titleBar">
+        android:layout_marginTop="@dimen/text_main_title_height">
 
         <ScrollView
             android:id="@+id/vScroll"
@@ -122,7 +91,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/bottomBar"
-        android:layout_below="@id/titleBar"
+        android:layout_marginTop="@dimen/text_main_title_height"
         android:clickable="false">
 
         <ImageView
@@ -131,23 +100,67 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:src="@drawable/shelter" />
+
         <ImageView
             android:id="@+id/shelterTop"
             android:layout_width="match_parent"
             android:layout_height="0px"
             android:layout_alignParentTop="true"
             android:src="@drawable/shelter" />
+
         <ImageView
             android:id="@+id/shelterRight"
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:src="@drawable/shelter" />
+
         <ImageView
             android:id="@+id/shelterBottom"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_alignParentBottom="true"
             android:src="@drawable/shelter" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/titleBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_main_title_height"
+        android:background="#313131">
+
+        <View
+            android:id="@+id/back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/title_back" />
+
+        <View
+            android:id="@+id/done"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true" />
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/title_done" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="文字"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
     </RelativeLayout>
 </RelativeLayout>

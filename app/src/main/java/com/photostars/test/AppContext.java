@@ -10,6 +10,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+import com.photostars.test.utils.LocalAlbumUtil;
 
 import java.io.File;
 
@@ -48,7 +49,7 @@ public class AppContext extends Application {
     private void init() {
         initImageLoader(getApplicationContext());
         //本地图片辅助类初始化
-        LocalImageHelper.init(this);
+        LocalAlbumUtil.init(this);
         if (display == null) {
             WindowManager windowManager = (WindowManager)
                     getSystemService(Context.WINDOW_SERVICE);

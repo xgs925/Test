@@ -5,27 +5,93 @@
     android:layout_height="match_parent"
     tools:context="com.photostars.test.activity.AlbumActivity">
 
+    <RelativeLayout
+        android:id="@+id/titleBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_main_title_height"
+        android:background="#313131">
+
+        <View
+            android:id="@+id/back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/title_back" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="添加图片"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:layout_below="@id/titleBar"></android.support.v4.view.ViewPager>
 
-    </android.support.v4.view.ViewPager>
     <LinearLayout
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="#212121">
+
+        <RelativeLayout
             android:id="@+id/choose"
-            android:layout_weight="1"
-            android:text="所有图片"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/pathName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="50dp"
+                android:gravity="center"
+                android:text="路径"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="50dp"
+                android:src="@drawable/up_arrow_pop" />
+        </RelativeLayout>
+
+        <TextView
             android:id="@+id/material"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="素材"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="14sp" />
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/alert_bar"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/main_blue" />
+
+    <ImageView
+        android:id="@+id/shelter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/shelter_bg_edit"
+        android:visibility="invisible" />
 </RelativeLayout>

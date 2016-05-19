@@ -5,9 +5,12 @@
     tools:context="com.photostars.test.fragment.OnlineAlbumFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <GridView
+        android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:horizontalSpacing="3dp"
+        android:numColumns="4"
+        android:verticalSpacing="3dp"></GridView>
 
 </FrameLayout>

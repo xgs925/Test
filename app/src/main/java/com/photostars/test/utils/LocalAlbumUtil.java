@@ -1,57 +1,24 @@
-package com.photostars.test;
+package com.photostars.test.utils;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
-
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by linjizong on 15/6/11.
+ * Created by Photostsrs on 2016/5/18.
  */
-public class LocalImageHelper {
-    private static LocalImageHelper instance;
-    private final AppContext context;
-    final List<LocalFile> checkedItems = new ArrayList<>();
-
-    public int getCurrentSize() {
-        return currentSize;
-    }
-
-    public void setCurrentSize(int currentSize) {
-        this.currentSize = currentSize;
-    }
-
-    //当前选中得图片个数
-    private int currentSize;
-    public String getCameraImgPath() {
-        return CameraImgPath;
-    }
-
-    public String setCameraImgPath() {
-        String foloder= AppContext.getInstance().getCachePath()
-                + "/PostPicture/";
-        File savedir = new File(foloder);
-        if (!savedir.exists()) {
-            savedir.mkdirs();
-        }
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss")
-                .format(new Date());
-        // 照片命名
-        String picName =  timeStamp + ".jpg";
-        //  裁剪头像的绝对路径
-        CameraImgPath = foloder + picName;
-        return  CameraImgPath;
-    }
-
-    //拍照时指定保存图片的路径
-    private String CameraImgPath;
+public class LocalAlbumUtil {
+    Context context;
+    private static LocalAlbumUtil instance;
+    private boolean isRunning = false;
+    final List<LocalFile> paths = new ArrayList<>();
+    final Map<String, List<LocalFile>> folders = new HashMap<>();
     //大图遍历字段
     private static final String[] STORE_IMAGES = {
             MediaStore.Images.Media._ID,
@@ -63,25 +30,20 @@ public class LocalImageHelper {
             MediaStore.Images.Thumbnails._ID,
             MediaStore.Images.Thumbnails.DATA
     };
-
-    final List<LocalFile> paths = new ArrayList<>();
-
-    final Map<String, List<LocalFile>> folders = new HashMap<>();
-
-    private LocalImageHelper(AppContext context) {
-        this.context = context;
-    }
-
     public Map<String, List<LocalFile>> getFolderMap() {
         return folders;
     }
-
-    public static LocalImageHelper getInstance() {
+    public List<LocalFile> getFolder(String folder) {
+        return folders.get(folder);
+    }
+    public static LocalAlbumUtil getInstance() {
         return instance;
     }
 
-    public static void init(AppContext context) {
-        instance = new LocalImageHelper(context);
+    private  LocalAlbumUtil(Context context){this.context=context;}
+
+    public static void init( Context context) {
+        instance = new LocalAlbumUtil(context);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -93,22 +55,6 @@ public class LocalImageHelper {
     public boolean isInited() {
         return paths.size() > 0;
     }
-
-    public List<LocalFile> getCheckedItems() {
-        return checkedItems;
-    }
-
-    private boolean resultOk;
-
-    public boolean isResultOk() {
-        return resultOk;
-    }
-
-    public void setResultOk(boolean ok) {
-        resultOk = ok;
-    }
-
-    private boolean isRunning = false;
 
     public synchronized void initImage() {
         if (isRunning)
@@ -144,6 +90,7 @@ public class LocalImageHelper {
                 String folder = file.getParentFile().getName();
 
                 LocalFile localFile = new LocalFile();
+                localFile.setPath(path);
                 localFile.setOriginalUri(uri);
                 localFile.setThumbnailUri(thumbUri);
                 int degree = cursor.getInt(2);
@@ -168,6 +115,7 @@ public class LocalImageHelper {
         isRunning=false;
     }
 
+
     private String getThumbnail(int id, String path) {
         //获取大图的缩略图
         Cursor cursor = context.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
@@ -187,38 +135,19 @@ public class LocalImageHelper {
         return null;
     }
 
-    public List<LocalFile> getFolder(String folder) {
-        return folders.get(folder);
-    }
-
-    public void clear(){
-        checkedItems.clear();
-        currentSize=(0);
-        String foloder= AppContext.getInstance().getCachePath()
-                + "/PostPicture/";
-        File savedir = new File(foloder);
-        if (savedir.exists()) {
-            deleteFile(savedir);
-        }
-    }
-    public void deleteFile(File file) {
-
-        if (file.exists()) {
-            if (file.isFile()) {
-                file.delete();
-            } else if (file.isDirectory()) {
-                File files[] = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    deleteFile(files[i]);
-                }
-            }
-        } else {
-        }
-    }
     public static class LocalFile {
+        private String path;
         private String originalUri;//原图URI
         private String thumbnailUri;//缩略图URI
         private int orientation;//图片旋转角度
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
 
         public String getThumbnailUri() {
             return thumbnailUri;

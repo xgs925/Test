@@ -1,4 +1,4 @@
-package com.photostars.test;
+package com.photostars.test.utils;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -28,6 +28,14 @@ import java.io.IOException;
  * Created by Photostsrs on 2016/5/11.
  */
 public class Util {
+    public static int getWindowWidth(Activity context){
+        return  context.getWindowManager().getDefaultDisplay().getWidth();
+    }
+
+    public static int getWindowHeight(Activity context){
+        return  context.getWindowManager().getDefaultDisplay().getHeight();
+    }
+
     public static void saveMyBitmap(Activity context, Bitmap bitmap, String bitName) {
         int REQUEST_EXTERNAL_STORAGE = 1;
         String[] PERMISSIONS_STORAGE = {

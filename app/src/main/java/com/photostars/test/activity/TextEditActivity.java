@@ -1,6 +1,7 @@
 package com.photostars.test.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Layout;
@@ -44,10 +46,13 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.photostars.test.Constant;
 import com.photostars.test.adapter.FontListViewAdapter;
 import com.photostars.test.R;
-import com.photostars.test.Util;
+import com.photostars.test.utils.Util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,6 +97,9 @@ public class TextEditActivity extends Activity {
     private float workWidth;
     private float workHeight;
     private float scale = 1;//图片缩放比例
+    private RelativeLayout shelter;
+    private Bitmap orPhoto;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,14 +107,41 @@ public class TextEditActivity extends Activity {
         contentView = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_text_edit, null);
         setContentView(contentView);
 
-        initView();
-    }
-
-    private void initView() {
         workWidth = getWindowManager().getDefaultDisplay().getWidth();
         workHeight = (getWindowManager().getDefaultDisplay().getHeight() - getResources().getDimension(R.dimen.text_main_title_height) - getResources().getDimension(R.dimen.text_main_bottom_height));
         workspaceCenterX = getWindowManager().getDefaultDisplay().getWidth() / 2;
         workspaceCenterY = workHeight / 2;
+
+        Intent data = getIntent();
+        String path = data.getStringExtra("path");
+        if (path.startsWith("/")) {//本地图片
+            orPhoto = BitmapFactory.decodeFile(path);
+            initView();
+        } else {//网络图片
+            ImageLoader.getInstance().loadImage(path, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
+                }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    orPhoto = bitmap;
+                    initView();
+                }
+
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+                }
+            });
+        }
+
+    }
+
+    private void initView() {
 
         initPhoto();
         initPopupWindow();
@@ -160,17 +195,21 @@ public class TextEditActivity extends Activity {
         textButton = (Button) findViewById(R.id.add_btn);
         textButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 TextView addTextView = new TextView(TextEditActivity.this);
                 addTextView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
+                        if (choosedView != null) {
+                            if (choosedView != v)
+                                choosedView.setBackgroundDrawable(null);
+                        }
                         touchAddedView = (TextView) v;
                         onTouchView(v, event);
                         return false;
                     }
                 });
-                addTextView.setText("Test");
+                addTextView.setText(Constant.DEFAULT_STR);
                 addTextView.setGravity(Gravity.CENTER);
                 addTextView.setTextColor(Color.parseColor("#ffffff"));
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -194,7 +233,15 @@ public class TextEditActivity extends Activity {
 
         });
 
-        Button done = (Button) findViewById(R.id.done);
+        View back = findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        View done = findViewById(R.id.done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -255,45 +302,24 @@ public class TextEditActivity extends Activity {
 
                             canvas.restore();
                         }
-                        saveMyBitmap(newPhoto, "test");
+                        Util.saveMyBitmap(TextEditActivity.this, newPhoto, "test");
                     }
                 });
             }
         });
     }
 
-    /**
-     * 保存文件到指定的路径下面
-     *
-     * @param bitmap
-     * @param bitName 文件名字
-     */
-    public void saveMyBitmap(Bitmap bitmap, String bitName) {
-        File f = new File("/sdcard/test/" + bitName + ".png");
-
-        FileOutputStream fOut = null;
-        try {
-            f.createNewFile();
-            fOut = new FileOutputStream(f);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-            fOut.flush();
-            fOut.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
 
     private void initPhoto() {
         mImageView = (ImageView) findViewById(R.id.mImage);
+        shelter = (RelativeLayout) findViewById(R.id.shelterLayout);
         ImageView l = (ImageView) findViewById(R.id.shelterLeft);
         ImageView r = (ImageView) findViewById(R.id.shelterRight);
         ImageView t = (ImageView) findViewById(R.id.shelterTop);
         ImageView b = (ImageView) findViewById(R.id.shelterBottom);
-        Bitmap orPhoto = BitmapFactory.decodeResource(this.getResources(), R.drawable.test);
+
+
+//        Bitmap orPhoto = BitmapFactory.decodeResource(this.getResources(), R.drawable.test);
         Point point = Util.ImageSampleFun(orPhoto.getWidth(), orPhoto.getHeight(), 2, 3);
         photo = Bitmap.createScaledBitmap(orPhoto, point.x, point.y, true);
         int photoWidth = photo.getWidth();
@@ -371,7 +397,9 @@ public class TextEditActivity extends Activity {
     private void showEditView() {
         final View popupView = getLayoutInflater().inflate(R.layout.popup_edit, null);
         final EditText editText = (EditText) popupView.findViewById(R.id.editText);
-        editText.setText(choosedView.getText());
+        if (!Constant.DEFAULT_STR.equals(choosedView.getText())) {
+            editText.setText(choosedView.getText());
+        }
         editText.requestFocus();
         View confirmBtn = popupView.findViewById(R.id.confirmBtn);
         View toStyleBtn = popupView.findViewById(R.id.toStyleBtn);
@@ -379,11 +407,11 @@ public class TextEditActivity extends Activity {
             @Override
             public void onClick(View view) {
                 String text = editText.getText().toString();
-
-                final float x = choosedView.getX();
-                final float y = choosedView.getY();
-                choosedView.setText(text);
-
+                if (text.equals("")) {
+                    choosedView.setText(Constant.DEFAULT_STR);
+                } else {
+                    choosedView.setText(text);
+                }
                 editPopupWindow.dismiss();
                 editPopupWindow = null;
 //                exitEditView();
@@ -393,7 +421,11 @@ public class TextEditActivity extends Activity {
             @Override
             public void onClick(View view) {
                 String text = editText.getText().toString();
-                choosedView.setText(text);
+                if (text.equals("")) {
+                    choosedView.setText(Constant.DEFAULT_STR);
+                } else {
+                    choosedView.setText(text);
+                }
 //                exitEditView();
                 editPopupWindow.dismiss();
                 editPopupWindow = null;
@@ -430,14 +462,23 @@ public class TextEditActivity extends Activity {
     private void offsetMainView(PopupWindow buttomWindow, float popHeight) {
         int[] choosedLocation = new int[2];
         choosedView.getLocationOnScreen(choosedLocation);
-        int bottomY = choosedLocation[1] + choosedView.getHeight();
+//        int bottomY = choosedLocation[1] + choosedView.getHeight();
+        float bottomY = choosedView.getY() + choosedView.getHeight();
         int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
 
+        final float mImageViewY = mImageView.getY();
+        final float shelterY = shelter.getY();
 
         float offset = bottomY - (screenHeight - popHeight);
+        float mImageViewBottom = workspaceCenterY + photo.getHeight() * scale / 2;
+
+        float maxOffset = mImageViewBottom - (screenHeight - popHeight);
+        if (offset > maxOffset) offset = maxOffset;
         Log.d(TAG, offset + "offset");
-        if (offset > 0) {
-            mainView.setY(-offset);
+        if (offset > -Util.dip2px(this, 44)) {
+            mainView.setY(-offset - shelterY);
+            mImageView.setY(-offset);
+            shelter.setY(-offset);
             mainViewOffset = offset;
         }
         buttomWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -445,6 +486,8 @@ public class TextEditActivity extends Activity {
             public void onDismiss() {
                 if (mainViewOffset != 0) {
                     mainView.setY(0);
+                    mImageView.setY(mImageViewY);
+                    shelter.setY(shelterY);
                     mainViewOffset = 0;
                 }
             }
@@ -563,15 +606,21 @@ public class TextEditActivity extends Activity {
         final Button alignLeft = (Button) styleView.findViewById(R.id.alignLeft);
         final Button alignCenter = (Button) styleView.findViewById(R.id.alignCenter);
         final Button alignRight = (Button) styleView.findViewById(R.id.alignRight);
+        final ImageView alignLeftImage = (ImageView) styleView.findViewById(R.id.alignLeftImage);
+        final ImageView alignCenterImage = (ImageView) styleView.findViewById(R.id.alignCenterImage);
+        final ImageView alignRightImage = (ImageView) styleView.findViewById(R.id.alignRightImage);
         Log.d(TAG, "getGravity" + choosedView.getGravity());
         switch (choosedView.getGravity()) {
             case Gravity.LEFT | 51:
                 alignGroup.check(alignLeft.getId());
+                alignLeftImage.setImageDrawable(getResources().getDrawable(R.drawable.left_justified_selection));
                 break;
             case Gravity.CENTER:
+                alignCenterImage.setImageDrawable(getResources().getDrawable(R.drawable.center_justified_selection));
                 alignGroup.check(alignCenter.getId());
                 break;
             case Gravity.RIGHT | 53:
+                alignRightImage.setImageDrawable(getResources().getDrawable(R.drawable.right_justified_selection));
                 alignGroup.check(alignRight.getId());
                 break;
         }
@@ -580,10 +629,19 @@ public class TextEditActivity extends Activity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if (i == alignLeft.getId()) {
                     choosedView.setGravity(Gravity.LEFT);
+                    alignLeftImage.setImageDrawable(getResources().getDrawable(R.drawable.left_justified_selection));
+                    alignCenterImage.setImageDrawable(getResources().getDrawable(R.drawable.center_justified));
+                    alignRightImage.setImageDrawable(getResources().getDrawable(R.drawable.right_justified));
                 } else if (i == alignCenter.getId()) {
                     choosedView.setGravity(Gravity.CENTER);
+                    alignLeftImage.setImageDrawable(getResources().getDrawable(R.drawable.left_justified));
+                    alignCenterImage.setImageDrawable(getResources().getDrawable(R.drawable.center_justified_selection));
+                    alignRightImage.setImageDrawable(getResources().getDrawable(R.drawable.right_justified));
                 } else if (i == alignRight.getId()) {
                     choosedView.setGravity(Gravity.RIGHT);
+                    alignLeftImage.setImageDrawable(getResources().getDrawable(R.drawable.left_justified));
+                    alignCenterImage.setImageDrawable(getResources().getDrawable(R.drawable.center_justified));
+                    alignRightImage.setImageDrawable(getResources().getDrawable(R.drawable.right_justified_selection));
                 }
             }
         });
@@ -631,40 +689,9 @@ public class TextEditActivity extends Activity {
         }
     }
 
-    private void onKeyboardShow() {
-        final RelativeLayout myLayout = (RelativeLayout) ((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0);
-        myLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-
-                Rect r = new Rect();
-                myLayout.getWindowVisibleDisplayFrame(r);
-
-                int screenHeight = myLayout.getRootView().getHeight();
-                int heightDifference = screenHeight - (r.bottom - r.top);
-                Log.d(TAG, "heightDifference" + heightDifference);
-//                        buttonWindow.showAtLocation(((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0), Gravity.BOTTOM, 0, heightDifference);
-
-                //boolean visible = heightDiff > screenHeight / 3;
-
-            }
-        });
-    }
-
-
-//    private void exitEditView() {
-//        if (currentButtonView != null) {
-//            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-//            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-//            currentButtonView.setVisibility(View.GONE);
-//            currentButtonView = null;
-//        }
-//    }
-
     private void onTouchView(View v, MotionEvent event) {
         Log.d(TAG, "onTouchView");
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
 //            exitEditView();
             exitStyleView();
 //            if (currentPopupWindow.isShowing()) {
@@ -688,11 +715,6 @@ public class TextEditActivity extends Activity {
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
             Log.d(TAG, "ACTION_UP");
-//            if (touchAddedView != null) {
-//                if (touchAddedView != choosedView) {
-//                    touchAddedView.setBackgroundDrawable(null);
-//                }
-//            }
             if (touchAddedView != null & choosedView != touchAddedView) {
                 choosedView = touchAddedView;
             }
@@ -700,9 +722,6 @@ public class TextEditActivity extends Activity {
             singleFinger = true;
             touchAddedView = null;
             preDegree = 0;
-//            if (choosedView != null) {
-//                chooseAddedView(choosedView);
-//            }
         }
     }
 
@@ -822,6 +841,7 @@ public class TextEditActivity extends Activity {
             switch (requestCode) {
                 case Constant.ALBUM_REQUEST_CODE:
                     Intent intent = new Intent(TextEditActivity.this, BGEditActivity.class);
+                    intent.putExtra("path", data.getStringExtra("path"));
                     intent.putExtra("width", photo.getWidth());
                     intent.putExtra("height", photo.getHeight());
                     startActivityForResult(intent, Constant.BG_EDIT_REQUEST_CODE);
@@ -831,6 +851,9 @@ public class TextEditActivity extends Activity {
                     byte[] bis = data.getByteArrayExtra("bg");
                     photo = BitmapFactory.decodeByteArray(bis, 0, bis.length);
                     mImageView.setImageBitmap(photo);
+                    float[] values = new float[9];
+                    mImageView.getImageMatrix().getValues(values);
+                    scale = values[0];
                     break;
             }
         }
