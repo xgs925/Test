@@ -65,6 +65,7 @@ public class AlbumActivity extends FragmentActivity implements LocalAlbumFragmen
     private TextView pathName;
     float alertBarWidth;
     private ImageView shelter;
+    private String materialListStr = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +91,8 @@ public class AlbumActivity extends FragmentActivity implements LocalAlbumFragmen
             public void onPageSelected(int position) {
                 alertBar.setX(alertBarWidth * position);
                 if (position == 1) {
-                    loadMaterial();
+                    if (materialListStr.equals(""))
+                        loadMaterial();
                 }
             }
 
@@ -174,7 +176,7 @@ public class AlbumActivity extends FragmentActivity implements LocalAlbumFragmen
 
     private void loadMaterial() {
         SharedPreferences preferences = getSharedPreferences(Constant.SharedPreferencesName, Activity.MODE_PRIVATE);
-        String materialListStr = preferences.getString("material_list", "");
+        materialListStr = preferences.getString("material_list", "");
         if (materialListStr.equals("")) {
             Callback callback = new Callback() {
                 @Override
@@ -207,6 +209,7 @@ public class AlbumActivity extends FragmentActivity implements LocalAlbumFragmen
                                 SharedPreferences preferences = getSharedPreferences(Constant.SharedPreferencesName, Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putString("material_list", res);
+                                materialListStr=res;
                                 editor.commit();
                             }
                         });

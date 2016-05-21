@@ -1,2 +1,2 @@
-include ':app', ':photoview'
+include ':app', ':photoview', ':xalbum'
 project(':photoview').projectDir = new File('library')

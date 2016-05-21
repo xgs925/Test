@@ -14,6 +14,8 @@ public class Constant {
 
     public static final String MATERIAL_URL = "http://211.99.249.31:8020/index.php/photostars/materialTool/showList20160518";
     public static final String MATERIAL_NEXT_URL = "http://211.99.249.31:8020/index.php/photostars/materialTool/showNextList20160518";
+    public static final String MATERIAL_BLEND_URL = "http://211.99.249.31:8020/index.php/photostars/materialTool/blendShowList20160518";
+    public static final String MATERIAL_BLEND_NEXT_URL = "http://211.99.249.31:8020/index.php/photostars/materialTool/blendShowNextList20160518";
 
     public static final String AUTH_KEY = "authorityKey";
     public static final String AUTH_VALUE = "eae08fc1bd9e9eb738fe5f94fe9582c0";

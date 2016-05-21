@@ -52,6 +52,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.photostars.test.Constant;
 import com.photostars.test.adapter.FontListViewAdapter;
 import com.photostars.test.R;
+import com.photostars.test.utils.SoftKeyboardUtil;
 import com.photostars.test.utils.Util;
 
 import java.io.File;
@@ -99,6 +100,8 @@ public class TextEditActivity extends Activity {
     private float scale = 1;//图片缩放比例
     private RelativeLayout shelter;
     private Bitmap orPhoto;
+    int softKeyboardHeightBottom;
+    int softKeyboardHeight;
 
 
     @Override
@@ -106,6 +109,27 @@ public class TextEditActivity extends Activity {
         super.onCreate(savedInstanceState);
         contentView = (RelativeLayout) getLayoutInflater().inflate(R.layout.activity_text_edit, null);
         setContentView(contentView);
+
+        SoftKeyboardUtil.observeSoftKeyboard(this, new SoftKeyboardUtil.OnSoftKeyboardChangeListener() {
+            @Override
+            public void onSoftKeyBoardChange(int softKeybardHeight, boolean visible) {
+                if (visible) {
+                    softKeyboardHeight = softKeybardHeight - softKeyboardHeightBottom;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            float edit_pop_height = getResources().getDimension(R.dimen.edit_pop_height);
+                            offsetMainView(editPopupWindow, edit_pop_height + softKeyboardHeight);
+                        }
+                    });
+
+                } else {
+                    softKeyboardHeightBottom = softKeybardHeight;
+//                    if (editPopupWindow != null) editPopupWindow.dismiss();
+                }
+                Log.d(TAG, visible + "|" + softKeybardHeight);
+            }
+        });
 
         workWidth = getWindowManager().getDefaultDisplay().getWidth();
         workHeight = (getWindowManager().getDefaultDisplay().getHeight() - getResources().getDimension(R.dimen.text_main_title_height) - getResources().getDimension(R.dimen.text_main_bottom_height));
@@ -454,8 +478,8 @@ public class TextEditActivity extends Activity {
 
         editPopupWindow = buttomWindow;
 
-        float edit_pop_offset = getResources().getDimension(R.dimen.edit_pop_offset);
-        offsetMainView(buttomWindow, edit_pop_offset);
+//        float edit_pop_height = getResources().getDimension(R.dimen.edit_pop_height);
+//        offsetMainView(buttomWindow, edit_pop_height+softKeyboardHeight);
 
     }
 
@@ -466,8 +490,9 @@ public class TextEditActivity extends Activity {
         float bottomY = choosedView.getY() + choosedView.getHeight();
         int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
 
-        final float mImageViewY = mImageView.getY();
-        final float shelterY = shelter.getY();
+//        final float mImageViewY = mImageView.getY();
+//        final float shelterY = shelter.getY();
+        final float marginTop=Util.dip2px(this, 44);
 
         float offset = bottomY - (screenHeight - popHeight);
         float mImageViewBottom = workspaceCenterY + photo.getHeight() * scale / 2;
@@ -475,23 +500,24 @@ public class TextEditActivity extends Activity {
         float maxOffset = mImageViewBottom - (screenHeight - popHeight);
         if (offset > maxOffset) offset = maxOffset;
         Log.d(TAG, offset + "offset");
-        if (offset > -Util.dip2px(this, 44)) {
-            mainView.setY(-offset - shelterY);
+        if (offset > -marginTop) {
+            mainView.setY(-offset - marginTop);
             mImageView.setY(-offset);
             shelter.setY(-offset);
             mainViewOffset = offset;
         }
-        buttomWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                if (mainViewOffset != 0) {
-                    mainView.setY(0);
-                    mImageView.setY(mImageViewY);
-                    shelter.setY(shelterY);
-                    mainViewOffset = 0;
+        if (buttomWindow != null)
+            buttomWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    if (mainViewOffset != 0) {
+                        mainView.setY(0);
+                        mImageView.setY(marginTop);
+                        shelter.setY(marginTop);
+                        mainViewOffset = 0;
+                    }
                 }
-            }
-        });
+            });
     }
 
     private void showStyleView(boolean style) {
@@ -858,4 +884,6 @@ public class TextEditActivity extends Activity {
             }
         }
     }
+
+
 }

@@ -2,9 +2,10 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="edit_pop_height">60dp</dimen>
 
+    <dimen name="edit_pop_height">60dp</dimen>
     <dimen name="style_pop_height">298dp</dimen>
+
     <!--软键盘+popupwindow-->
     <dimen name="edit_pop_offset">360dp</dimen>
 

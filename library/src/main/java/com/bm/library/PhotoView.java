@@ -655,22 +655,23 @@ public class PhotoView extends ImageView {
         photeScale = values[0];
         float cx = mImgRect.left + mImgRect.width() / 2;
         float cy = mImgRect.top + mImgRect.height() / 2;
-        boolean widthshort=orPhoto.getWidth() * photeScale < photoViewWidth;
-        boolean heightshort=orPhoto.getHeight() * photeScale < photoViewHeight;
+        boolean widthshort = orPhoto.getWidth() * photeScale < photoViewWidth;
+        boolean heightshort = orPhoto.getHeight() * photeScale < photoViewHeight;
         if (widthshort) {
+
             float scaleFactor = (float) (photoViewWidth * 1.0 / (orPhoto.getWidth() * photeScale));
             mScale *= scaleFactor;
-            mAnimaMatrix.postScale(scaleFactor, scaleFactor);
+            mAnimaMatrix.postScale(scaleFactor, scaleFactor, cx, cy);
             executeTranslate();
         }
         if (heightshort) {
 
             float scaleFactor = (float) (photoViewHeight * 1.0 / (orPhoto.getHeight() * photeScale));
             mScale *= scaleFactor;
-            mAnimaMatrix.postScale(scaleFactor, scaleFactor);
+            mAnimaMatrix.postScale(scaleFactor, scaleFactor, cx, cy);
             executeTranslate();
         }
-        if (!widthshort&!heightshort) {
+        if (!widthshort & !heightshort) {
             //平移图片，保证图片在view里中点不变
             if (preWidth != 0) {
                 int transX = (photoViewWidth - preWidth) / 2;
@@ -684,46 +685,40 @@ public class PhotoView extends ImageView {
             preWidth = photoViewWidth;
             preHeight = photoViewHeight;
 
-            float left = -values[2];
-            float top = -values[5];
-            float bottom = photoViewHeight - values[5] - orPhoto.getHeight() * photeScale;
-            float right = (photoViewWidth - values[2]) - orPhoto.getWidth() * photeScale;
-            if (left < 0) {
-                mAnimaMatrix.postTranslate(left, 0);
-                mTranslateX += left;
-                executeTranslate();
-            }
 
-            if (top < 0) {
-                mAnimaMatrix.postTranslate(0, top);
-                mTranslateY += top;
-                executeTranslate();
-            }
 
-            if (bottom > 0) {//view超出图片最下端 图片下移
-                mAnimaMatrix.postTranslate(0, bottom);
-                mTranslateY += bottom;
-                executeTranslate();
-            }
+        }
+        float left = -values[2];
+        float top = -values[5];
 
-            if (right > 0) {//view超出图片最右端 图片右移
-                mAnimaMatrix.postTranslate(right, 0);
-                mTranslateX += right;
-                executeTranslate();
-            }
+        if (left < 0) {
+            mAnimaMatrix.postTranslate(left, 0);
+            mTranslateX += left;
+            executeTranslate();
+        }
+
+        if (top < 0) {
+            mAnimaMatrix.postTranslate(0, top);
+            mTranslateY += top;
+            executeTranslate();
+        }
+
+        float bottom = photoViewHeight - values[5] - orPhoto.getHeight() * photeScale;
+        float right = (photoViewWidth - values[2]) - orPhoto.getWidth() * photeScale;
+        if (bottom > 0) {//view超出图片最下端 图片下移
+            mAnimaMatrix.postTranslate(0, bottom);
+            mTranslateY += bottom;
+            executeTranslate();
+        }
+
+        if (right > 0) {//view超出图片最右端 图片右移
+            mAnimaMatrix.postTranslate(right, 0);
+            mTranslateX += right;
+            executeTranslate();
         }
 
     }
 
-    public void translateTo(float[] values) {
-
-        float transX = values[2] + photoViewWidth / 2 - orPhoto.getWidth() * photeScale / 2;
-        float transY = values[5] + photoViewHeight / 2 - orPhoto.getHeight() * photeScale / 2;
-        mAnimaMatrix.postTranslate(transX, transY);
-        mTranslateX += transX;
-        mTranslateY += transY;
-        executeTranslate();
-    }
 
     @Override
     public void setImageBitmap(Bitmap bm) {
@@ -731,35 +726,6 @@ public class PhotoView extends ImageView {
         super.setImageBitmap(bm);
     }
 
-    public void changeImageBitmap(Bitmap bm, float degree) {
-//        Matrix mBaseMatrix_b=new Matrix(mBaseMatrix);
-//        Matrix matrix_b=new Matrix(mAnimaMatrix);
-//        int mTranslateX_b=mTranslateX;
-//        int mTranslateY_b=mTranslateY;
-//        float currentMinScale_b=currentMinScale;
-//        float mScale_b=mScale;
-//        float mDegrees_b=mDegrees;
-//        RectF mBaseRect_b=new RectF(mBaseRect);
-//        RectF mWidgetRect_b= new RectF(mWidgetRect);
-//        RectF mImgRect_b= new RectF(mImgRect);
-//        RectF mCommonRect_b=new RectF(mCommonRect);
-//        RectF mTmpRect_b=new RectF(mTmpRect);
-
-        setImageBitmap(bm);
-
-//        mBaseMatrix=mBaseMatrix_b;
-//        mAnimaMatrix=matrix_b;
-//        mTranslateX=mTranslateX_b;
-//        mTranslateY=mTranslateY_b;
-//        currentMinScale=currentMinScale_b;
-//        mScale=mScale_b;
-//        mDegrees=mDegrees_b;
-//        mWidgetRect=mWidgetRect_b;
-//        mImgRect=mImgRect_b;
-//        mTmpRect=mTmpRect_b;
-//        mBaseRect=mBaseRect_b;
-//        mCommonRect=mCommonRect_b;
-    }
 
     boolean invertH = false;
     boolean invertV = false;
